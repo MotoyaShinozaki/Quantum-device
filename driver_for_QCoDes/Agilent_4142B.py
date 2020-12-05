@@ -2,7 +2,7 @@
 """
 Created on Oct. 7, 2020
 Last Updated on Nov. 2, 2020
-This version suppurts only voltage output
+This version suppurts voltage/current output and current readout.
 
 @author: Yui, Motoya
 """
@@ -33,10 +33,26 @@ class AgilentChannel(InstrumentChannel):
         self.model = self._parent.model
 
         self.add_parameter('set_voltage',
-                            set_cmd = "FMT1;CN{};DV{},0,{}".format(ch,ch,'{:.8f}'),
+                            set_cmd = "FMT1;CN{};DV{},0,{},{}".format(ch,ch,'{:.8f}',1e-6),
                             label='Set_voltage',
                             unit='V')
+        
+        self.add_parameter('curr',
+                            get_cmd = "FMT2;CN{};MM1,{};RI{},0;AV1,0;XE".format(ch,ch,ch), #FMT2 is needed to get current value as type of float.
+                            label='Current',
+                            get_parser=float,
+                            unit='A')
 
+        self.add_parameter('set_current',
+                            set_cmd = "FMT1;CN{};DI{},0,{}".format(ch,ch,'{:.8f}'),
+                            label='Set_current',
+                            unit='A')
+
+        # self.add_parameter('volt',
+        #                     get_cmd = "FMT2;CN{};MM1,{};RV{},0;AV1,0;XE".format(ch,ch,ch),
+        #                     label='Voltage',
+        #                     get_parser=float,
+        #                     unit='V')
         self.channel = channel
 
 
